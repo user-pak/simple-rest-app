@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head> 
+    <title>Getting Started: Handling Form Submission</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="main-content" class="container">
+	<h1 th:inline="text">Note Form</h1>
+         <div class="row">
+            <div class="col-md-12">
+            <form class="form-inline" id="put_note_form" th:object="${note}">
+                <div class="form-group">
+                    <label for="name">Type your notes</label>
+				        <input type="text" class="form-control" th:field="*{title}">
+				        <input type="text" class="form-control" th:field="*{content}">
+				        <input type="hidden" th:field="*{noteId}">
+                </div>
+                <div class="form-group">
+	                <button class="btn btn-default" type="submit" id="put_submit">Send</button>
+	                <input type="reset" class="btn btn-default" value="Reset" />
+	                <input type="button" class="btn btn-default" onclick="deleteSend()" value="Delete"/>
+                </div>
+            </form>
+        	</div>
+       	</div>
+       </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$("form").on("submit", function(e) {
+			e.preventDefault();
+			$.ajax({
+				url:"/apiNotes/" + $("#noteId").val(),
+				method:"put",
+				contentType:"application/json",
+				data:JSON.stringify({title:$("#title").val(), content:$("#content").val()})
+			})
+		})
+	})
+	function deleteSend() {
+		if(confirm("삭제하시겠습니까")) {
+			$.ajax({
+				url:"/apiNotes/" + $("#noteId").val(),
+				method:"delete"
+			})
+		}		
+	}
+/* 	$(document).ajaxSuccess(function(event, request, settings) {
+	    if (request.getResponseHeader('REQUIRES_AUTH') === '1') {
+	       window.location = '/';
+	    }
+	}); */
+</script>
+</body>
+</html>

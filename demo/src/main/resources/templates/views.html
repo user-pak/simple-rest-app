@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello jQuery</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <script src="note.js"></script>
+    </head>
+
+    <body>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="note_table" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Notes</th>
+                </tr>
+                </thead>
+                <tbody id="note_body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+        <div class="col-md-6">
+            <form class="form-inline" id="post_note_form">
+                <div class="form-group">
+                    <label for="name">Type your notes</label>
+                    <input type="text" id="title" class="form-control" placeholder="Your title is...">
+                    <input type="text" id="content" class="form-control" placeholder="Your content is...">
+                </div>
+                <button class="btn btn-default" type="submit">Send</button>
+            </form>
+        </div>
+    </body>
+</html>

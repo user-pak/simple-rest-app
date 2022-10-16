@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+        <title>Hello World!</title>
+        <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+    <div id="main-content" class="container">
+            <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline" th:action="@{/logout}" method="post">
+                <div class="form-group">
+                    <input type="submit" value="Sign Out"/>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+
+                <div class="form-group">
+			        <p>Click <a th:href="@{/chatchat}">chat</a> to chat</p>
+			        <p>Click <a th:href="@{/views}">note</a> to view</p>
+                </div>
+        </div>
+    </div>
+</div>
+    </body>
+</html>
