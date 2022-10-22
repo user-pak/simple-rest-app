@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <title>Hello jQuery</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+<body>
+
+	<div th:if="${message}">
+		<h2 th:text="${message}"/>
+	</div>
+    <div class="row">
+        <div class="col-md-12">
+
+		<ul>
+			<li th:each="image : ${images}">
+				<a th:href="${image.imageFilename}" th:text="${image.imageTitle}" />
+				
+				<input type="hidden" id="image_id" th:value="${image.imageId}"/>
+			</li>
+		</ul>
+        </div>
+    </div>
+	<div>
+		<div class="col-md-6">
+            <form class="form-inline" method="POST" enctype="multipart/form-data" action="/images">
+                <div class="form-group">
+                    <label for="name">Upload your image</label>
+				        <input type="text" class="form-control" name="imageTitle">
+				        <input type="file" class="form-control" name="file">
+                </div>
+                <div class="form-group">
+	                <button class="btn btn-default" type="submit" id="put_submit">Send</button>
+                </div>
+            </form>
+       </div>
+</body>
+</html>
