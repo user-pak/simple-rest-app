@@ -43,18 +43,8 @@ public class AccessingImageRestTests {
 	@MockBean
 	private StorageService service;
 	
-	@Autowired
-	private ImageRepository repository;
-	
-	@BeforeEach
-	public void deleteAllBeforeTest() throws Exception {
-		
-		repository.deleteAll();
-	}
-	
 	@Test
 	public void shouldFindAllImageList() throws Exception {
-		
 		mockMvc.perform(get("/images")).andDo(print())
 			.andExpect(status().isOk())
 			.andExpectAll(model().attribute("images",
@@ -81,9 +71,9 @@ public class AccessingImageRestTests {
 	@Test
 	public void uploadShouldSaveImageAndStoreFile() throws Exception {
 		
-		MockMultipartFile mockFile = new MockMultipartFile("file", "bar.gif", "image/jpeg", "bar data".getBytes());
+		MockMultipartFile mockFile = new MockMultipartFile("file", "mockMultipartFile.gif", "image/jpeg", "목멀티파트파일".getBytes());
 		mockMvc.perform(multipart("/images").file(mockFile)
-				.param("imageTitle", "bar")
+				.param("imageTitle", "파일")
 				.contentType(MediaType.IMAGE_GIF))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(header().string("Location", Matchers.containsString("images")));
@@ -92,35 +82,35 @@ public class AccessingImageRestTests {
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("images", 
 					Matchers.hasItem(Matchers.allOf(
-							Matchers.hasProperty("imageFilename", Matchers.containsString("bar.gif"))))));
+							Matchers.hasProperty("imageFilename", Matchers.containsString("mockMultipartFile.gif"))))));
 	}
 	
 	@Test
 	public void should404WhenMissingFile() throws Exception {
 		given(service.loadAsResource("fake_image")).willThrow(StorageServiceException.class);
 		MvcResult result = mockMvc.perform(get("/files/fake_image")).andExpect(status().isNotFound()).andReturn();
-		assertThat(result.getResponse().getContentAsString().contains("could not find the file"));
+		assertThat(result.getResponse().getContentAsString().contains("파일을 찾을 수 없습니다"));
 	}
 	
 	@Test
 	public void shouldReplaceImageTitle() throws Exception {
-		MvcResult result = mockMvc.perform(post("/apiImages").content("{\"imageTitle\":\"stakes winner\",\"imageFilename\":\"horse.gif\"}"))
+		MvcResult result = mockMvc.perform(post("/apiImages").content("{\"imageTitle\":\"이미지제목\",\"imageFilename\":\"mockMultipartFile.gif\"}"))
 			.andExpect(status().isCreated()).andReturn();
 		String uri = result.getResponse().getHeader("Location");
-		mockMvc.perform(patch(uri).content("{\"imageTitle\":\"stakes loser\"}"))
+		mockMvc.perform(patch(uri).content("{\"imageTitle\":\"수정한이미지제목\"}"))
 			.andExpect(status().isNoContent());
 		mockMvc.perform(get(uri)).andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.imageTitle").value("stakes loser"));
+			.andExpect(jsonPath("$.imageTitle").value("수정한이미지제목"));
 		mockMvc.perform(get("/images")).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("images", 
-					Matchers.hasItem(Matchers.allOf(Matchers.hasProperty("imageTitle", Matchers.containsString("stakes loser"))))));
+					Matchers.hasItem(Matchers.allOf(Matchers.hasProperty("imageTitle", Matchers.containsString("수정한이미지제목"))))));
 	}
 	@Test
 	public void shouldDeleteImage() throws Exception {
 		
-		MvcResult result = mockMvc.perform(post("/apiImages").content("{\"imageTitle\":\"stakes winner\",\"imageFilename\":\"horse.gif\"}"))
+		MvcResult result = mockMvc.perform(post("/apiImages").content("{\"imageTitle\":\"이미지타이틀\",\"imageFilename\":\"mockMultipartFile.gif\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String uri = result.getResponse().getHeader("Location");
 		mockMvc.perform(delete(uri))
@@ -129,7 +119,7 @@ public class AccessingImageRestTests {
 		mockMvc.perform(get("/images")).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("images", Matchers.not(Matchers.hasItem(
-					Matchers.allOf(Matchers.hasProperty("imageTitle", Matchers.containsString("stakes winner")))))));
+					Matchers.allOf(Matchers.hasProperty("imageTitle", Matchers.containsString("이미지타이틀")))))));
 	}
 	
 }

@@ -2,12 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
     <head>
+    <meta charset="UTF-8">
         <title>Hello World!</title>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
     <div id="main-content" class="container">
-            <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+            <h1 th:inline="text">안녕하세요 [[${#httpServletRequest.remoteUser}]]!</h1>
     <div class="row">
         <div class="col-md-6">
             <form class="form-inline" th:action="@{/logout}" method="post">
@@ -19,9 +20,11 @@
         <div class="col-md-6">
 
                 <div class="form-group">
-			        <p>Click <a th:href="@{/chatchat}">chat</a> to chat</p>
-			        <p>Click <a th:href="@{/views}">note</a> to write</p>
-			        <p>Click <a th:href="@{/images}">image</a> to view</p>
+			        <p>클릭 <a th:href="@{/chatchat}">채팅창으로</a> to chat</p>
+			        <p>클릭 <a th:href="@{/views}">메모장으로</a> to write</p>
+			        <p>클릭 <a th:href="@{/images}">파일폴더로</a> to view</p>
+			        1. loginuser session
+			        2. jdbc charaterset
                 </div>
         </div>
     </div>

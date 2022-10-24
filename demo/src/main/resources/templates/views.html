@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+    <meta charset="UTF-8">
         <title>Hello jQuery</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -13,7 +14,7 @@
             <table id="note_table" class="table table-striped">
                 <thead>
                 <tr>
-                    <th>Notes</th>
+                    <th>메모들</th>
                 </tr>
                 </thead>
                 <tbody id="note_body">
@@ -24,11 +25,11 @@
         <div class="col-md-6">
             <form class="form-inline" id="post_note_form">
                 <div class="form-group">
-                    <label for="name">Type your notes</label>
-                    <input type="text" id="title" class="form-control" placeholder="Your title is...">
-                    <input type="text" id="content" class="form-control" placeholder="Your content is...">
+                    <label for="name">메모를 쓰세요</label>
+                    <input type="text" id="title" class="form-control" placeholder="제목은...">
+                    <input type="text" id="content" class="form-control" placeholder="내용은...">
                 </div>
-                <button class="btn btn-default" type="submit">Send</button>
+                <button class="btn btn-default" type="submit">보내기</button>
             </form>
         </div>
     </body>

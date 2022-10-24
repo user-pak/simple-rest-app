@@ -49,7 +49,7 @@ public class NoteRepositoryTests {
 	@Test
 	public void shouldCreateEntity() throws Exception {
 		
-		MvcResult result = mockMvc.perform(post("/apiNotes").content("{\"title\":\"note\",\"content\":\"content\"}"))
+		MvcResult result = mockMvc.perform(post("/apiNotes").content("{\"title\":\"제목\",\"content\":\"내용\"}"))
 			.andExpect(status().isCreated()).andReturn();
 		assertThat(result.getResponse().getHeader("Location").toString().contains("**/apiNotes"));
 	}
@@ -57,22 +57,22 @@ public class NoteRepositoryTests {
 	@Test
 	public void shouldQueryFindByTitle() throws Exception {
 		
-		mockMvc.perform(post("/apiNotes").content("{\"title\":\"note\",\"content\":\"content\"}"))
+		mockMvc.perform(post("/apiNotes").content("{\"title\":\"제목\",\"content\":\"내용\"}"))
 			.andExpect(status().isCreated());
-		mockMvc.perform(get("/apiNotes/search/findByTitle?title={title}", "note")).andExpect(status().isOk())
-			.andExpect(jsonPath("$.content").value("content"));
+		mockMvc.perform(get("/apiNotes/search/findByTitle?title={title}", "제목")).andExpect(status().isOk())
+			.andExpect(jsonPath("$.content").value("내용"));
 	}
 
 	@Test
 	public void shouldReplaceEntity() throws Exception {
 		
-		MvcResult result = mockMvc.perform(post("/apiNotes").content("{\"title\":\"note\",\"content\":\"content\"}"))
+		MvcResult result = mockMvc.perform(post("/apiNotes").content("{\"title\":\"제목\",\"content\":\"내용\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = result.getResponse().getHeader("Location");
-		mockMvc.perform(put(url).content("{\"title\":\"ote\",\"content\":\"ontent\"}"))
+		mockMvc.perform(put(url).content("{\"title\":\"수정한제목\",\"content\":\"수정한내용\"}"))
 			.andExpect(status().isNoContent());
 		mockMvc.perform(get(url)).andDo(print()).andExpect(status().isOk())
-			.andExpect(jsonPath("$.title").value("ote")).andExpect(jsonPath("$.content").value("ontent"));
+			.andExpect(jsonPath("$.title").value("수정한제목")).andExpect(jsonPath("$.content").value("수정한내용"));
 	}
 	
 	@Test

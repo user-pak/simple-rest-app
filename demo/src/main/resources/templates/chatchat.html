@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
     <title>Hello WebSocket</title>
     <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="/webjars/jquery/jquery.min.js"></script>
@@ -17,9 +18,9 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="connect">WebSocket connection:</label>
-                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
-                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    <label for="connect">웹소켓 연결:</label>
+                    <button id="connect" class="btn btn-default" type="submit">연결하기</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">연결끊기
                     </button>
                 </div>
             </form>
@@ -27,10 +28,10 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="name">Type your messages</label>
+                    <label for="name">메시지를 쓰세요</label>
                     <input type="text" id="message" class="form-control" placeholder="Your message is...">
                 </div>
-                <button id="send" class="btn btn-default" type="submit">Send</button>
+                <button id="send" class="btn btn-default" type="submit">보내기</button>
             </form>
         </div>
     </div>
@@ -39,7 +40,7 @@
             <table id="conversation" class="table table-striped">
                 <thead>
                 <tr>
-                    <th>Greetings</th>
+                    <th>환영합니다</th>
                 </tr>
                 </thead>
                 <tbody id="messaging">
