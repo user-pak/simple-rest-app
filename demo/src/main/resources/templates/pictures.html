@@ -4,6 +4,7 @@
         <title>Hello jQuery</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <script src="image.js"></script>
     </head>
 <body>
 
@@ -15,9 +16,13 @@
 
 		<ul>
 			<li th:each="image : ${images}">
-				<a th:href="${image.imageFilename}" th:text="${image.imageTitle}" />
 				
+				<input type="text" th:value="${image.imageTitle}"/>
+				<a th:href="${image.imageFilename}" th:text="${#strings.substringAfter(image.imageFilename,'_')}" />
+				
+				<input type="button" class="btn btn-default" onclick="deleteSend(this)" value="Delete"/>
 				<input type="hidden" id="image_id" th:value="${image.imageId}"/>
+				<input type="button" class="btn btn-default" onclick="updateTitle(this)" value="Update Title"/>
 			</li>
 		</ul>
         </div>

@@ -37,7 +37,8 @@ public class ImageController {
 		
 		List<Image> images = (List<Image>) repository.findAll();
 		for(Image image : images) {
-			image.setImageFilename(MvcUriComponentsBuilder.fromMethodName(ImageController.class, "serveFile", image.getImageFilename())
+			String rename = image.getImageId() + "_" + image.getImageFilename();
+			image.setImageFilename(MvcUriComponentsBuilder.fromMethodName(ImageController.class, "serveFile", rename)
 					.build().toUriString());
 		}
 		mav.addObject("images", images).setViewName("pictures");
@@ -55,8 +56,16 @@ public class ImageController {
 	@PostMapping("/images")
 	public RedirectView saveImage(@RequestParam(value="imageTitle")String imageTitle, @RequestParam(value="file") MultipartFile file) {
 		
-		service.store(file);
-		repository.save(new Image(imageTitle, file.getOriginalFilename()));
+		Image image = repository.save(new Image(imageTitle, file.getOriginalFilename()));
+		service.storeWithId(file,image);
+		return new RedirectView("images");
+	}
+	
+	@GetMapping("/images/{id}")
+	public RedirectView deleteImage(@PathVariable Integer id) {
+		Image image = repository.findById(id).orElseThrow(() -> new StorageServiceException("could not find the file to delete"));
+		repository.deleteById(id);
+		service.deleteFile(image);
 		return new RedirectView("images");
 	}
 	

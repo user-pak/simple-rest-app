@@ -14,6 +14,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.image.Image;
+
 @Service
 public class FileSystemStorageService implements StorageService{
 	
@@ -34,19 +36,6 @@ public class FileSystemStorageService implements StorageService{
 	}
 
 	@Override
-	public Path store(MultipartFile imageFile) {
-		// TODO Auto-generated method stub
-		if(imageFile.isEmpty()) throw new StorageServiceException("file is empty");	
-		try (InputStream inputStream = imageFile.getInputStream()) {
-			Files.copy(inputStream, Paths.get(directory, imageFile.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
-			return Paths.get(directory, imageFile.getOriginalFilename());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new StorageServiceException("could not copy file");
-		}
-	}
-
-	@Override
 	public void init() {
 		// TODO Auto-generated method stub
 		try {
@@ -57,6 +46,38 @@ public class FileSystemStorageService implements StorageService{
 		}
 	}
 
+	@Override
+	public Path storeWithId(MultipartFile file, Image image) {
+		// TODO Auto-generated method stub
+		if(file.isEmpty()) throw new StorageServiceException("file is empty");
+		Path temp = Paths.get(directory, file.getOriginalFilename());
+		try (InputStream inputStream = file.getInputStream()){
+			Files.copy(inputStream, temp, StandardCopyOption.REPLACE_EXISTING);
+			String rename = renameFile(image);
+			Files.move(temp, temp.resolveSibling(rename));
+			return temp.resolveSibling(rename);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new StorageServiceException("could not save file");
+		}
+	}
 
+	@Override
+	public void deleteFile(Image image) {
+		// TODO Auto-generated method stub
+		String rename = renameFile(image);
+		try {
+			Files.delete(Paths.get(directory, rename));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new StorageServiceException("could not delete the file");
+		}
+	}
+
+	@Override
+	public String renameFile(Image image) {
+		// TODO Auto-generated method stub
+		return image.getImageId() + "_" + image.getImageFilename();
+	}
 
 }
