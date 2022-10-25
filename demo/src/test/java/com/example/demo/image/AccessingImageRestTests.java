@@ -71,7 +71,7 @@ public class AccessingImageRestTests {
 	@Test
 	public void uploadShouldSaveImageAndStoreFile() throws Exception {
 		
-		MockMultipartFile mockFile = new MockMultipartFile("file", "mockMultipartFile.gif", "image/jpeg", "목멀티파트파일".getBytes());
+		MockMultipartFile mockFile = new MockMultipartFile("file", "목멀티파트파일.gif", "image/jpeg", "목멀티파트파일".getBytes());
 		mockMvc.perform(multipart("/images").file(mockFile)
 				.param("imageTitle", "파일")
 				.contentType(MediaType.IMAGE_GIF))
@@ -82,7 +82,7 @@ public class AccessingImageRestTests {
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("images", 
 					Matchers.hasItem(Matchers.allOf(
-							Matchers.hasProperty("imageFilename", Matchers.containsString("mockMultipartFile.gif"))))));
+							Matchers.hasProperty("imageFilename", Matchers.containsString("목멀티파트파일.gif"))))));
 	}
 	
 	@Test
