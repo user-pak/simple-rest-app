@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
     <head>
     <meta charset="UTF-8">
         <title>Hello jQuery</title>
@@ -26,6 +27,7 @@
             <form class="form-inline" id="post_note_form">
                 <div class="form-group">
                     <label for="name">메모를 쓰세요</label>
+                    <span id="nickname" sec:authentication="name"></span>
                     <input type="text" id="title" class="form-control" placeholder="제목은...">
                     <input type="text" id="content" class="form-control" placeholder="내용은...">
                 </div>

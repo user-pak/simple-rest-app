@@ -1,7 +1,4 @@
 $(document).ready(function() {
-	if("${session.containsKey('nickname')}") {
-
-	}
     $.ajax({
         url: "/apiNotes"
     }).then(function(notes) {    
@@ -23,10 +20,10 @@ function postNote() {
 		url:"/apiNotes",
 		method:"post",
 		contentType:"application/json",
-		data: JSON.stringify({title:$("#title").val(),content:$("#content").val()}),
+		data: JSON.stringify({title:$("#title").val(),content:$("#content").val(),writer:$("#nickname").text()}),
 		success:function(newNote) {
 			console.log(newNote);
-			$("#note_body").append("<tr><td><a href='" + newNote._links.note.href.replace("apiNotes","notes") + "'>" + newNote.title + "</td></tr>");
+			$("#note_body").append("<tr><td><a href='" + newNote._links.note.href.replace("apiNotes","notes") + "'>" + newNote.title + "<small>작성자 " + newNote.writer + "</small></td></tr>");
 		}
 	})
 }	

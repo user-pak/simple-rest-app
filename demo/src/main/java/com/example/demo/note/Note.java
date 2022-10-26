@@ -11,6 +11,7 @@ public class Note {
 	private Integer noteId;
 	private String title;
 	private String content;
+	private String writer;
 	
 	protected Note() {}
 
@@ -44,10 +45,19 @@ public class Note {
 		this.content = content;
 	}
 
+	public String getWriter() {
+		return writer;
+	}
+
+	public void setWriter(String writer) {
+		this.writer = writer;
+	}
+
 	@Override
 	public String toString() {
-		return "Note [noteId=" + noteId + ", title=" + title + ", content=" + content + "]";
+		return "Note [noteId=" + noteId + ", title=" + title + ", content=" + content + ", writer=" + writer + "]";
 	}
+	
 	
 	
 }
