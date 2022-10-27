@@ -18,13 +18,12 @@
             </form>
         </div>
         <div class="col-md-6">
+		로그인한 유저: <a th:href="@{|/user/${#authentication.name}|}" sec:authentication="name"></a>
 
                 <div class="form-group">
 			        <p>클릭 <a th:href="@{/chatchat}">채팅창으로</a> to chat</p>
 			        <p>클릭 <a th:href="@{/views}">메모장으로</a> to write</p>
 			        <p>클릭 <a th:href="@{/images}">파일폴더로</a> to view</p>
-			        1. loginuser session
-			        2. jdbc charaterset
                 </div>
         </div>
     </div>
