@@ -15,10 +15,11 @@ public class Note {
 	
 	protected Note() {}
 
-	public Note(String title, String content) {
+	public Note(String title, String content, String writer) {
 		super();
 		this.title = title;
 		this.content = content;
+		this.writer = writer;
 	}
 
 	public Integer getNoteId() {

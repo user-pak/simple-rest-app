@@ -14,6 +14,7 @@
             <form class="form-inline" id="put_note_form" th:object="${note}">
                 <div class="form-group">
                     <label for="name">메모를 수정하세요</label>
+                   		<input type="text" class="form-control" th:field="*{writer}">
 				        <input type="text" class="form-control" th:field="*{title}">
 				        <input type="text" class="form-control" th:field="*{content}">
 				        <input type="hidden" th:field="*{noteId}">
@@ -33,10 +34,13 @@
 		$("form").on("submit", function(e) {
 			e.preventDefault();
 			$.ajax({
-				url:"/apiNotes/" + $("#noteId").val(),
+				url:"/notes/" + $("#noteId").val(),
 				method:"put",
 				contentType:"application/json",
-				data:JSON.stringify({title:$("#title").val(), content:$("#content").val()})
+				data:JSON.stringify({title:$("#title").val(), content:$("#content").val(), writer:$("#writer").val()}),
+				success:function(replacedNote) {
+					console.log(replacedNote);
+				}
 			})
 		})
 	})
@@ -48,11 +52,6 @@
 			})
 		}		
 	}
-/* 	$(document).ajaxSuccess(function(event, request, settings) {
-	    if (request.getResponseHeader('REQUIRES_AUTH') === '1') {
-	       window.location = '/';
-	    }
-	}); */
 </script>
 </body>
 </html>

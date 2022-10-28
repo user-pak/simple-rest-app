@@ -10,14 +10,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -82,5 +86,21 @@ public class NoteRepositoryTests {
 		String uri = result.getResponse().getHeader("Location");
 		mockMvc.perform(delete(uri)).andExpect(status().isNoContent());
 		mockMvc.perform(get(uri)).andExpect(status().isNotFound());
+	}
+	
+	@Test
+	@WithMockUser(username="kupu")
+	public void shouldReplaceNoteWhenValidWriter() throws Exception {
+		
+		MvcResult result = mockMvc.perform(post("/apiNotes").content("{\"title\":\"타이틀\",\"content\":\"컨텐트\",\"writer\":\"kupu\"}").contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isCreated()).andReturn();
+		String url = result.getResponse().getHeader("Location");
+		mockMvc.perform(put(url.replace("apiNotes", "notes"))
+				.contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"수정한타이틀\",\"content\":\"수정한컨텐트\",\"writer\":\"kupu\"}"))
+			.andExpect(status().is2xxSuccessful());
+		mockMvc.perform(get(url.replace("apiNotes", "notes"))).andDo(print())
+			.andExpectAll(model().attribute("note", Matchers.hasProperty("title", Matchers.equalTo("수정한타이틀"))),
+						  model().attribute("note", Matchers.hasProperty("content", Matchers.equalTo("수정한컨텐트"))),
+						  model().attribute("note", Matchers.hasProperty("writer", Matchers.equalTo("kupu"))));
 	}
 }

@@ -18,8 +18,8 @@ public class LoadNoteDatabase implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
 		noteRepository.deleteAll();
-		noteRepository.save(new Note("note1","content1"));
-		noteRepository.save(new Note("note2","content2"));
+		noteRepository.save(new Note("노트1", "노트내용1", "kupu"));
+		noteRepository.save(new Note("노트2", "노트내용2", "popo"));
 	}
 	
 
