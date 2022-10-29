@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html xmlns:th="https://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head> 
 <meta charset="UTF-8">
     <title>Getting Started: Handling Form Submission</title>
@@ -14,12 +15,12 @@
             <form class="form-inline" id="put_note_form" th:object="${note}">
                 <div class="form-group">
                     <label for="name">메모를 수정하세요</label>
-                   		<input type="text" class="form-control" th:field="*{writer}">
+                   		<input type="text" class="form-control" th:field="*{writer}" readonly>
 				        <input type="text" class="form-control" th:field="*{title}">
 				        <input type="text" class="form-control" th:field="*{content}">
 				        <input type="hidden" th:field="*{noteId}">
                 </div>
-                <div class="form-group">
+                <div class="form-group" th:if="${#authentication.name} == ${note.writer}">
 	                <button class="btn btn-default" type="submit" id="put_submit">보내기</button>
 	                <input type="reset" class="btn btn-default" value="초기화" />
 	                <input type="button" class="btn btn-default" onclick="deleteSend()" value="삭제하기"/>
