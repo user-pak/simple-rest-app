@@ -1,8 +1,14 @@
 package com.example.demo.note;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 
 @Entity
 public class Note {
@@ -11,7 +17,14 @@ public class Note {
 	private Integer noteId;
 	private String title;
 	private String content;
+//	@OneToMany(targetEntity=User.class)
+//	@JoinColumn(name="nickname")
 	private String writer;
+	@ElementCollection(targetClass=Comment.class)
+	@CollectionTable(name="comment",joinColumns= @JoinColumn(name="refNotes"))
+	private List<Comment> comment = new ArrayList<>();
+//	@CreationTimestamp
+//	private Timestamp creationTime;
 	
 	protected Note() {}
 
@@ -20,6 +33,15 @@ public class Note {
 		this.title = title;
 		this.content = content;
 		this.writer = writer;
+	}
+
+	public Note(Integer noteId, String title, String content, String writer, List<Comment> comment) {
+		super();
+		this.noteId = noteId;
+		this.title = title;
+		this.content = content;
+		this.writer = writer;
+		this.comment = comment;
 	}
 
 	public Integer getNoteId() {
@@ -54,11 +76,17 @@ public class Note {
 		this.writer = writer;
 	}
 
-	@Override
-	public String toString() {
-		return "Note [noteId=" + noteId + ", title=" + title + ", content=" + content + ", writer=" + writer + "]";
+	public List<Comment> getComment() {
+		return comment;
+	}
+
+	public void setComment(List<Comment> comment) {
+		this.comment = comment;
 	}
 	
+	public void addComment(Comment comment) {
+		this.comment.add(comment);
+	}
 	
 	
 }
