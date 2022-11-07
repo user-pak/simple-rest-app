@@ -75,7 +75,7 @@ public class AccessingPostRestTests {
 		MvcResult result = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"name\":\"이름\",\"content\":\"컨텐트\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = result.getResponse().getHeader("Location");
-		mockMvc.perform(post(url + "/comments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
+		mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.postComments[0].name", is("kupu")))
 			.andExpect(jsonPath("$.postComments[0].review", is("쿠푸의리뷰")));		
@@ -87,7 +87,7 @@ public class AccessingPostRestTests {
 		MvcResult result = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"name\":\"이름\",\"content\":\"컨텐트\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = result.getResponse().getHeader("Location");
-		mockMvc.perform(post(url + "/comments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
+		mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
 			.andExpect(status().isCreated());
 		mockMvc.perform(delete(url)).andExpect(status().isNoContent());
 		mockMvc.perform(get(url)).andDo(print()).andExpect(status().isNotFound());
@@ -99,14 +99,14 @@ public class AccessingPostRestTests {
 		MvcResult postResult = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"name\":\"이름\",\"content\":\"컨텐트\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = postResult.getResponse().getHeader("Location");
-		MvcResult commentResult = mockMvc.perform(post(url + "/comments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
+		MvcResult commentResult = mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
 			.andExpect(status().isCreated()).andReturn();
 		Long postCommentId = JsonPath.parse(commentResult.getResponse().getContentAsString()).read("$.postComments[0].id", Long.class);
-		String urlWithCommentId = url + "/comments/" + postCommentId;
+		String urlWithCommentId = url + "/postComments/" + postCommentId;
 		mockMvc.perform(put(urlWithCommentId)
 				.contentType(MediaType.APPLICATION_JSON).content("{\"review\":\"바뀐 쿠푸의리뷰\"}"))
-				.andExpect(status().isNoContent())
-				.andExpect(jsonPath("$.postComments[0].review", is("바뀐 쿠푸의리뷰")));
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.review", is("바뀐 쿠푸의리뷰")));
 
 	}
 	
@@ -116,13 +116,12 @@ public class AccessingPostRestTests {
 		MvcResult postResult = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"name\":\"이름\",\"content\":\"컨텐트\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = postResult.getResponse().getHeader("Location");
-		MvcResult commentResult = mockMvc.perform(post(url + "/comments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"popo\",\"review\":\"포포의리뷰\"}"))
+		MvcResult commentResult = mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"popo\",\"review\":\"포포의리뷰\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		Long postCommentId = JsonPath.parse(commentResult.getResponse().getContentAsString()).read("$.postComments[0].id", Long.class);
-		String urlWithCommentId = url + "/comments/" + postCommentId;
-		mockMvc.perform(delete(urlWithCommentId)).andExpect(status().isNotFound());
-		mockMvc.perform(get(url)).andDo(print()).andExpect(status().isOk())
-			.andExpect(jsonPath("$.postComments").value(Matchers.empty()));
+		String urlWithCommentId = url + "/postComments/" + postCommentId;
+		mockMvc.perform(delete(urlWithCommentId)).andExpect(status().isNoContent());
+		mockMvc.perform(get(url)).andDo(print()).andExpect(status().isOk());
 		
 	}
 	

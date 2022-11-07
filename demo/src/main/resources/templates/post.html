@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="UTF-8">
+<title>post</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<script th:src="@{/post.js}"></script>
+</head>
+<body>
+ <span id="nickname" sec:authentication="name"></span>
+   <div id="main-content" class="container">
+	<h1 th:inline="text">게시글</h1>
+         <div class="row">
+            <div class="col-md-12">
+            <form class="form-inline" th:object="${post}">
+                <div class="form-group">
+
+                   		<input type="text" class="form-control" id="post_name" th:field="*{name}" readonly>
+				        <input type="text" class="form-control" id="post_title" th:field="*{title}">
+				        <input type="text" class="form-control" id="post_content" th:field="*{content}">
+				        <input type="hidden" id="post_id" th:field="*{id}">
+		                <div class="form-group" th:if="${#authentication.name} == ${post.name}">
+			                <button class="btn btn-default" type="button" id="post_update">게시글 변경하기</button>
+			                <input type="reset" class="btn btn-default" value="초기화" />
+			                <input type="button" class="btn btn-default" id="post_delete" value="게시글 삭제하기"/>
+		                </div>
+				    
+					<ul>
+						<li th:each="comment : ${post.postComments}">
+					
+							<input type="text" th:value="${comment.name}" readonly/>
+							<input type="text" th:value="${comment.review}"/>
+                			<div class="form-group" th:if="${#authentication.name} == ${comment.name}">
+								<input type="button" onclick="deleteComment(this)" value="댓글 삭제하기"/>
+								<input type="hidden" id="comment_id" th:value="${comment.id}"/>
+								<input type="button" onclick="updateReview(this)" value="댓글 변경하기"/>
+							</div>
+						</li>
+					</ul>
+					
+                    <input type="text" id="comment_review" class="form-control" placeholder="댓글을 쓰세요...">
+                    <button class="btn btn-default" type="button" id="comment_send">댓글 달기</button>
+                </div>
+
+            </form>
+        	</div>
+       	</div>
+       </div>
+</body>
+</html>

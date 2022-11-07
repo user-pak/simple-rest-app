@@ -64,15 +64,23 @@ public class Post extends AbstractEntity{
 	}
 	
 	public void addPostComment(PostComment postComment) {
-		Assert.notNull(postComment, "코멘트가 존재하지 않습니다");
+		Assert.notNull(postComment, "댓글이 존재하지 않습니다");
 		this.postComments.add(postComment);
 		postComment.setPost(this);
 		
 	}
 	
 	public void removePostComment(PostComment postComment) {
-		Assert.notNull(postComment, "코멘트가 존재하지 않습니다");
+		Assert.notNull(postComment, "댓글이 존재하지 않습니다");
 		this.postComments.remove(postComment);
 		postComment.setPost(null);
 	}
+
+	@Override
+	public String toString() {
+		return "Post [title=" + title + ", name=" + name + ", content=" + content + ", postComments=" + postComments
+				+ "]";
+	}
+	
+	
 }
