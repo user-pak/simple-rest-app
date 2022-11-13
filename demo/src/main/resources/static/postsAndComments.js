@@ -23,7 +23,7 @@ $(document).ready(function() {
 			url:"/apiPosts",
 			method:"post",
 			contentType:"application/json",
-			data:JSON.stringify({title:$("#title").val(),name:$("#nickname").text(),content:$("#content").val()}),
+			data:JSON.stringify({title:$("#title").val(),content:$("#content").val()}),
 			success:function(post) {
 				const $li = document.createElement("li");
 				const para = document.createElement("a");

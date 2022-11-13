@@ -9,19 +9,20 @@
 		<script th:src="@{/post.js}"></script>
 </head>
 <body>
- <span id="nickname" sec:authentication="name"></span>
+ 로그인한 유저: <span id="nickname" sec:authentication="name"></span>
    <div id="main-content" class="container">
 	<h1 th:inline="text">게시글</h1>
          <div class="row">
             <div class="col-md-12">
             <form class="form-inline" th:object="${post}">
                 <div class="form-group">
-
-                   		<input type="text" class="form-control" id="post_name" th:field="*{name}" readonly>
-				        <input type="text" class="form-control" id="post_title" th:field="*{title}">
-				        <input type="text" class="form-control" id="post_content" th:field="*{content}">
+                  		작성일: <input type="text" class="form-control" th:field="*{createdOn}" readonly>
+                  		수정일: <input type="text" class="form-control" th:field="*{updatedOn}" readonly>
+                   		게시자: <input type="text" class="form-control" id="post_name" th:field="*{nickname}" readonly>
+				                  제목:  <input type="text" class="form-control" id="post_title" th:field="*{title}">
+				                  내용:  <input type="text" class="form-control" id="post_content" th:field="*{content}">
 				        <input type="hidden" id="post_id" th:field="*{id}">
-		                <div class="form-group" th:if="${#authentication.name} == ${post.name}">
+		                <div class="form-group" th:if="${#authentication.name} == ${post.nickname}">
 			                <button class="btn btn-default" type="button" id="post_update">게시글 변경하기</button>
 			                <input type="reset" class="btn btn-default" value="초기화" />
 			                <input type="button" class="btn btn-default" id="post_delete" value="게시글 삭제하기"/>
@@ -30,8 +31,8 @@
 					<ul>
 						<li th:each="comment : ${post.postComments}">
 					
-							<input type="text" th:value="${comment.name}" readonly/>
-							<input type="text" th:value="${comment.review}"/>
+							댓글 쓴 사람: <input type="text" th:value="${comment.name}" readonly/>
+							댓글 : <input type="text" th:value="${comment.review}"/>
                 			<div class="form-group" th:if="${#authentication.name} == ${comment.name}">
 								<input type="button" onclick="deleteComment(this)" value="댓글 삭제하기"/>
 								<input type="hidden" id="comment_id" th:value="${comment.id}"/>
