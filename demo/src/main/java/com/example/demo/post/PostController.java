@@ -1,5 +1,7 @@
 package com.example.demo.post;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,8 +65,17 @@ public class PostController {
 	@GetMapping("/posts/{id}")
 	public ModelAndView findById(@PathVariable Long id) {
 		
+		ModelMapper mapper = new ModelMapper();
 		ModelAndView mav = new ModelAndView("post");
-		mav.addObject("post", postRepository.findById(id).orElseThrow(() -> new DemoControllerException("포스트가 없습니다")));
+		Post findById = postRepository.findById(id).orElseThrow(() -> new DemoControllerException("포스트가 없습니다"));
+		TypeMap<Post,PostDTO> propertyMapper = mapper.createTypeMap(Post.class, PostDTO.class);
+		propertyMapper.addMapping(post -> post.getAudit().getCreatedOn(), PostDTO::setCreatedOn);
+		propertyMapper.addMapping(post -> post.getAudit().getUpdatedOn(), PostDTO::setUpdatedOn);
+		propertyMapper.addMapping(post -> post.getCreatedBy().getNickname(), PostDTO::setNickname);
+		PostDTO postDTO = mapper.map(findById, PostDTO.class);
+			
+		mav.addObject("post",postDTO);
 		return mav;
 	}
+	
 }

@@ -2,36 +2,63 @@ package com.example.demo.post;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
 import com.example.demo.AbstractEntity;
+import com.example.demo.audit.Audit;
+import com.example.demo.user.User;
+import com.example.demo.user.UserOnlyContainsNickname;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity(name="Post")
 @Table(name="post")
-public class Post extends AbstractEntity{
+@EntityListeners(value = { AuditingEntityListener.class })
+public class Post extends AbstractEntity implements UserOnlyContainsNickname{
 
 	private String title;
-	private String name;
 	private String content;
+	@Embedded
+	private Audit audit = new Audit();	
+	@CreatedBy
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(referencedColumnName ="nickname", name="createdBy")
+	@JsonIgnore
+	private User createdBy;	
+	@Transient
+	private String nickname;
 	@OneToMany(mappedBy="post",cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<PostComment> postComments = new ArrayList<>();
 	
 	protected Post() {}
 
-	public Post(String title, String name, String content) {
+	public Post(String title, String content) {
 		super();
 		Assert.hasText(title, "타이틀이 없습니다");
-		Assert.hasText(name, "작성자가 없습니다");
 		Assert.hasText(content, "컨텐트가 없습니다");
 		this.title = title;
-		this.name = name;
 		this.content = content;
 	}
 	
@@ -41,14 +68,6 @@ public class Post extends AbstractEntity{
 	
 	public String getTitle() {
 		return this.title;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getContent() {
@@ -76,11 +95,22 @@ public class Post extends AbstractEntity{
 		postComment.setPost(null);
 	}
 
-	@Override
-	public String toString() {
-		return "Post [title=" + title + ", name=" + name + ", content=" + content + ", postComments=" + postComments
-				+ "]";
+	public Audit getAudit() {
+		return audit;
 	}
-	
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	@Override
+	public String getNickname() {
+		// TODO Auto-generated method stub
+		if(this.createdBy != null) {
+			this.nickname = this.createdBy.getNickname();
+		}
+		return this.nickname;
+	}
+
 	
 }
