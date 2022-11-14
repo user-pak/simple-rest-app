@@ -1,7 +1,6 @@
 package com.example.demo.post;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -17,13 +16,11 @@ import java.time.LocalDateTime;
 
 import org.exparity.hamcrest.date.LocalDateTimeMatchers;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -89,22 +86,24 @@ public class AccessingPostRestTests {
 		MvcResult result = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"content\":\"컨텐트\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = result.getResponse().getHeader("Location");
-		mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
+		mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"review\":\"포포의리뷰\"}"))
 			.andExpect(status().isCreated())
 			.andExpectAll(jsonPath("$.createdBy").doesNotExist(),
 					jsonPath("$.nickname", is("popo")), 
-					jsonPath("$.postComments[0].name", is("kupu")), 
-					jsonPath("$.postComments[0].review", is("쿠푸의리뷰")));		
+					jsonPath("$.audit.createdOn").exists(),
+					jsonPath("$.postComments[0].nickname", is("popo")),
+					jsonPath("$.postComments[0].audit.createdOn").exists(),
+					jsonPath("$.postComments[0].review", is("포포의리뷰")));		
 	}
 	
 	@Test
 	@WithMockCustomUser
 	public void shoudDeletePostAndPostComment() throws Exception {
 		
-		MvcResult result = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"name\":\"이름\",\"content\":\"컨텐트\"}"))
+		MvcResult result = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"content\":\"컨텐트\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = result.getResponse().getHeader("Location");
-		mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
+		mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"review\":\"포포의리뷰\"}"))
 			.andExpect(status().isCreated());
 		mockMvc.perform(delete(url)).andExpect(status().isNoContent());
 		mockMvc.perform(get(url)).andDo(print()).andExpect(status().isNotFound());
@@ -114,17 +113,18 @@ public class AccessingPostRestTests {
 	@WithMockCustomUser
 	public void shouldReplaceComment() throws Exception {
 		
-		MvcResult postResult = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"name\":\"이름\",\"content\":\"컨텐트\"}"))
+		MvcResult postResult = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"content\":\"컨텐트\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = postResult.getResponse().getHeader("Location");
-		MvcResult commentResult = mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"kupu\",\"review\":\"쿠푸의리뷰\"}"))
+		MvcResult commentResult = mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"review\":\"포포의리뷰\"}"))
 			.andExpect(status().isCreated()).andReturn();
 		Long postCommentId = JsonPath.parse(commentResult.getResponse().getContentAsString()).read("$.postComments[0].id", Long.class);
 		String urlWithCommentId = url + "/postComments/" + postCommentId;
 		mockMvc.perform(put(urlWithCommentId)
-				.contentType(MediaType.APPLICATION_JSON).content("{\"review\":\"바뀐 쿠푸의리뷰\"}"))
+				.contentType(MediaType.APPLICATION_JSON).content("{\"review\":\"바뀐 포포의리뷰\"}"))
 				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.review", is("바뀐 쿠푸의리뷰")));
+				.andExpectAll(jsonPath("$.audit.updatedOn").exists(),
+						jsonPath("$.review", is("바뀐 포포의리뷰")));
 
 	}
 	
@@ -132,10 +132,10 @@ public class AccessingPostRestTests {
 	@WithMockCustomUser
 	public void shouldDeleteComment() throws Exception {
 		
-		MvcResult postResult = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"name\":\"이름\",\"content\":\"컨텐트\"}"))
+		MvcResult postResult = mockMvc.perform(post("/apiPosts").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"포스트\",\"content\":\"컨텐트\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		String url = postResult.getResponse().getHeader("Location");
-		MvcResult commentResult = mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"popo\",\"review\":\"포포의리뷰\"}"))
+		MvcResult commentResult = mockMvc.perform(post(url + "/postComments").contentType(MediaType.APPLICATION_JSON).content("{\"review\":\"포포의리뷰\"}"))
 				.andExpect(status().isCreated()).andReturn();
 		Long postCommentId = JsonPath.parse(commentResult.getResponse().getContentAsString()).read("$.postComments[0].id", Long.class);
 		String urlWithCommentId = url + "/postComments/" + postCommentId;

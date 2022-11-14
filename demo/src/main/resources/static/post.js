@@ -32,7 +32,7 @@ $(document).ready(function() {
 			url: "/apiPosts/" + post_id + "/postComments",
 			method: "post",
 			contentType: "application/json",
-			data:JSON.stringify({name:name_value, review:$("#comment_review").val()}),
+			data:JSON.stringify({review:$("#comment_review").val()}),
 			success:function(postWithComment) {
 				location.href="/posts/" + post_id;
 			}
@@ -50,7 +50,7 @@ function updateReview(element) {
 		method: "put",
 		contentType: "application/json",
 		data:JSON.stringify({review:comment_replaced_review}),
-		success: function() {
+		success: function(replacedComment) {
 			alert("댓글이 변경되었습니다");
 			location.href="/posts/" + post_id;
 		}	

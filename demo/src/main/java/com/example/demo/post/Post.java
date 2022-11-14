@@ -3,35 +3,24 @@ package com.example.demo.post;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import com.example.demo.AbstractEntity;
 import com.example.demo.audit.Audit;
 import com.example.demo.user.User;
 import com.example.demo.user.UserOnlyContainsNickname;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity(name="Post")
 @Table(name="post")
@@ -97,10 +86,6 @@ public class Post extends AbstractEntity implements UserOnlyContainsNickname{
 
 	public Audit getAudit() {
 		return audit;
-	}
-
-	public User getCreatedBy() {
-		return createdBy;
 	}
 
 	@Override

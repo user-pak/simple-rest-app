@@ -16,10 +16,12 @@
             <div class="col-md-12">
             <form class="form-inline" th:object="${post}">
                 <div class="form-group">
+                		<div>
                   		작성일: <input type="text" class="form-control" th:field="*{createdOn}" readonly>
                   		수정일: <input type="text" class="form-control" th:field="*{updatedOn}" readonly>
-                   		게시자: <input type="text" class="form-control" id="post_name" th:field="*{nickname}" readonly>
-				                  제목:  <input type="text" class="form-control" id="post_title" th:field="*{title}">
+                  		</div>
+                   		게시자: <input type="text" class="form-control" id="post_name" th:field="*{nickname}" readonly><br>
+				                  제목:  <input type="text" class="form-control" id="post_title" th:field="*{title}"><br>
 				                  내용:  <input type="text" class="form-control" id="post_content" th:field="*{content}">
 				        <input type="hidden" id="post_id" th:field="*{id}">
 		                <div class="form-group" th:if="${#authentication.name} == ${post.nickname}">
@@ -30,14 +32,17 @@
 				    
 					<ul>
 						<li th:each="comment : ${post.postComments}">
-					
-							댓글 쓴 사람: <input type="text" th:value="${comment.name}" readonly/>
+							댓글 쓴 사람: <input type="text" th:value="${comment.nickname}" readonly/>
 							댓글 : <input type="text" th:value="${comment.review}"/>
-                			<div class="form-group" th:if="${#authentication.name} == ${comment.name}">
+                			<div class="form-group" th:if="${#authentication.name} == ${comment.nickname}">
 								<input type="button" onclick="deleteComment(this)" value="댓글 삭제하기"/>
 								<input type="hidden" id="comment_id" th:value="${comment.id}"/>
 								<input type="button" onclick="updateReview(this)" value="댓글 변경하기"/>
 							</div>
+							<div>
+							댓글 작성일: <input type="text" th:value="${comment.audit.createdOn}" readonly>
+                  			댓글 수정일: <input type="text" th:value="${comment.audit.updatedOn}" readonly>
+                  			</div>
 						</li>
 					</ul>
 					

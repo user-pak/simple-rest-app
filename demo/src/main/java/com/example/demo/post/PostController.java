@@ -20,11 +20,10 @@ import com.example.demo.DemoControllerException;
 public class PostController {
 	
 	private final PostRepository postRepository;
-	private final PostCommentRepository commentRepository;
 	
-	public PostController(@Autowired PostRepository postRepository, @Autowired PostCommentRepository commentRepository) {
+	public PostController(@Autowired PostRepository postRepository) {
 		this.postRepository = postRepository;
-		this.commentRepository = commentRepository;
+
 	}
 
 	@PostMapping("/apiPosts/{id}/postComments")
@@ -38,26 +37,26 @@ public class PostController {
 	@PutMapping("/apiPosts/{id}/postComments/{postCommentId}")
 	public ResponseEntity<PostComment> replaceComment(@PathVariable Long id, @PathVariable Long postCommentId, @RequestBody PostComment requestComment) {
 		
-		PostComment postComment = commentRepository.findById(postCommentId)
-				.map(comment -> {
-					comment.setReview(requestComment.getReview());
-					return commentRepository.save(comment);
+		Post post = postRepository.findOneByPostCommentsId(postCommentId)
+				.map(src -> {
+						src.getPostComments().get(0).setReview(requestComment.getReview());
+						return postRepository.saveAndFlush(src);
 				})
-				.orElseThrow(() ->new DemoControllerException("댓글이 없습니다"));
+				.orElseThrow(() ->new DemoControllerException("포스트가 없습니다"));
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(postComment);
+		return ResponseEntity.status(HttpStatus.CREATED).body(post.getPostComments().get(0));
 		
 	}
 	
 	@DeleteMapping("/apiPosts/{id}/postComments/{postCommentId}")
-	public ResponseEntity<Post> deleteComment(@PathVariable Long id, @PathVariable Long postCommentId) {
+	public ResponseEntity<?> deleteComment(@PathVariable Long id, @PathVariable Long postCommentId) {
 		
-		postRepository.findById(id)
-				.map(post-> {
-					post.removePostComment(
-							commentRepository.findById(postCommentId).orElseThrow(() -> new DemoControllerException("댓글이 없습니다")));
-					return postRepository.save(post);
-				}).orElseThrow(() -> new DemoControllerException("포스트가 없습니다"));
+		postRepository.findOneByPostCommentsId(postCommentId)
+				.map(src-> {
+						src.removePostComment(src.getPostComments().get(0));
+						return postRepository.saveAndFlush(src);
+				})
+				.orElseThrow(() -> new DemoControllerException("포스트가 없습니다"));
 		
 		return ResponseEntity.noContent().build();
 	}
@@ -71,7 +70,7 @@ public class PostController {
 		TypeMap<Post,PostDTO> propertyMapper = mapper.createTypeMap(Post.class, PostDTO.class);
 		propertyMapper.addMapping(post -> post.getAudit().getCreatedOn(), PostDTO::setCreatedOn);
 		propertyMapper.addMapping(post -> post.getAudit().getUpdatedOn(), PostDTO::setUpdatedOn);
-		propertyMapper.addMapping(post -> post.getCreatedBy().getNickname(), PostDTO::setNickname);
+		propertyMapper.addMapping(post -> post.getNickname(), PostDTO::setNickname);
 		PostDTO postDTO = mapper.map(findById, PostDTO.class);
 			
 		mav.addObject("post",postDTO);
