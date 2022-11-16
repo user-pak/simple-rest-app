@@ -1,12 +1,15 @@
 package com.example.demo.image;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,18 +20,15 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.example.demo.image.storageService.StorageService;
 import com.example.demo.image.storageService.StorageServiceException;
 
 @Controller
 public class ImageController {
 	
-	private final StorageService service;
-	private final ImageRepository repository;
+	private final ImageDBRepository repository;
 		
 	@Autowired
-	public ImageController(StorageService service, ImageRepository repository) {
-		this.service = service;
+	public ImageController(ImageDBRepository repository) {
 		this.repository = repository;
 	}
 	
@@ -37,35 +37,47 @@ public class ImageController {
 		
 		List<Image> images = (List<Image>) repository.findAll();
 		for(Image image : images) {
-			String rename = image.getImageId() + "_" + image.getImageFilename();
-			image.setImageFilename(MvcUriComponentsBuilder.fromMethodName(ImageController.class, "serveFile", rename)
+			image.setImageFileURL(MvcUriComponentsBuilder.fromMethodName(ImageController.class, "serveFile", image.getId())
 					.build().toUriString());
 		}
 		mav.addObject("images", images).setViewName("pictures");
 		return mav;
 	}
 	
-	@GetMapping("files/{filename}")
+	@GetMapping(value="files/{id}",produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseBody
-	public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+	public ResponseEntity<ByteArrayResource> serveFile(@PathVariable Long id) {
 		
-		Resource imageFile = service.loadAsResource(filename);
-		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + imageFile.getFilename() + "\"").body(imageFile);
+		Image image = repository.findById(id).orElseThrow(() -> new StorageServiceException("파일을 찾을 수 없습니다"));
+		String filename = "";
+		try {
+			filename = URLEncoder.encode(image.getImageFilename(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			new StorageServiceException("파일명을 불러 올 수 없습니다");
+		}
+		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"").body(new ByteArrayResource(image.getImageFile()));
 	}
 	
 	@PostMapping("/images")
-	public RedirectView saveImage(@RequestParam(value="imageTitle")String imageTitle, @RequestParam(value="file") MultipartFile file) {
+	public RedirectView saveImage(@RequestParam(value="file") MultipartFile imageFile, @RequestParam(value="imageTitle")String imageTitle) {
 		
-		Image image = repository.save(new Image(imageTitle, file.getOriginalFilename()));
-		service.storeWithId(file,image);
+		try {
+			repository.save(new Image(imageTitle, imageFile.getOriginalFilename(), imageFile.getBytes()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			new StorageServiceException("파일을 저장 하지 못했습니다");
+		}
 		return new RedirectView("images");
 	}
 	
 	@GetMapping("/images/{id}")
-	public RedirectView deleteImage(@PathVariable Integer id) {
-		Image image = repository.findById(id).orElseThrow(() -> new StorageServiceException("could not find the file to delete"));
-		repository.deleteById(id);
-		service.deleteFile(image);
+	public RedirectView deleteImage(@PathVariable Long id) {
+		try {
+			repository.deleteById(id);
+		} catch(IllegalArgumentException e) {		
+			new StorageServiceException("파일을 찾을 수 없습니다");
+		}
 		return new RedirectView("images");
 	}
 	

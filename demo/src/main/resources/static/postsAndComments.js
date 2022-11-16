@@ -4,6 +4,10 @@ $(document).ready(function() {
 	btn.innerHTML = "게시글 보내기";
 	btn.id="post_btn"
 	document.body.appendChild(btn);
+	const para = document.createElement("p");
+	para.innerText = "게시글 목록입니다";
+	document.body.appendChild(para);
+	
 	
 	$.ajax({
 		url: "/apiPosts"
@@ -30,6 +34,8 @@ $(document).ready(function() {
 				para.href = post._links.post.href.replace("apiPosts","posts");
 				para.innerText = post.title;
 				document.body.appendChild($li).appendChild(para);
+				$("#title").val('');
+				$("#content").val('');
 			}
 		})
 	})

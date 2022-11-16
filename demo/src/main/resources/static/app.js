@@ -25,6 +25,7 @@ function connect() {
 		setConnected(true);
 		stompClient.subscribe('/topic/messaging', function(serverMessage) {
 			showMessage(JSON.parse(serverMessage.body).content);
+			$("#message").val("");
 		})
 	})
 }
